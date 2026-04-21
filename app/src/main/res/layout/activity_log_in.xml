@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/green_gradient2">
+
+    <!-- TOP AREA -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <!-- CARD -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@drawable/card_bg"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- EMAIL -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Enter your email"
+            android:background="@drawable/input_bg"
+            android:padding="12dp"
+            android:layout_marginTop="20dp"/>
+
+        <!-- PASSWORD -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/input_bg"
+            android:layout_marginBottom="80dp">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:paddingStart="12dp"
+                android:paddingEnd="40dp"/>
+
+            <!-- Eye Icon -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_visibility"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"/>
+        </RelativeLayout>
+
+        <!-- LOGIN BUTTON -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:text="Log In"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#33D49C"
+            android:layout_marginTop="30dp"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+
+        <!-- FINGERPRINT -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use Fingerprint To Access"
+            android:textSize="14sp"
+            android:textColor="#0D1B2A"
+            android:layout_marginTop="16dp"/>
+
+        <!-- SOCIAL ICONS -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/fb2"
+                android:layout_margin="7dp"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/google"
+                android:layout_margin="7dp"/>
+        </LinearLayout>
+
+        <!-- FOOTER -->
+        <TextView
+                android:id="@+id/tvFooter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Don't have an account? Sign Up"
+            android:textSize="14sp"
+            android:textColor="#6B7280"
+            android:layout_marginTop="12dp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

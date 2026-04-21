@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "687511403934",
+    "project_id": "finalert-3ded1",
+    "storage_bucket": "finalert-3ded1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:687511403934:android:5ef2ddd8dd713cb06faa8f",
+        "android_client_info": {
+          "package_name": "edu.ewubd.finalert"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjJjpKV3Lm8h5SpnrNoAyA-d20md1Q56U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+

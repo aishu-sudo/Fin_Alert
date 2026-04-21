@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/green_gradient2">
+
+    <!-- TOP GREEN AREA -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome To\nExpense Manager"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <!-- CARD AREA -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/card_bg"
+        android:padding="20dp">
+
+        <!-- Circle Background -->
+        <View
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:background="@drawable/circle_green"/>
+
+        <!-- Image (overlapping circle) -->
+
+        <!-- NEXT -->
+        <ImageView
+            android:id="@+id/onboardImage"
+            android:layout_width="250dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="-220dp"
+            android:layout_marginRight="-20dp"
+            android:src="@drawable/ic_onboard1" />
+
+        <TextView
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next →"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="12dp"
+            android:textColor="#0D1B2A"
+            android:clickable="true"
+            android:focusable="true"
+
+            android:layout_marginTop="50dp"/>
+
+        <!-- DOTS -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <View
+                android:id="@+id/dot1"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/dot_active"
+                android:layout_margin="4dp"/>
+
+            <View
+                android:id="@+id/dot2"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/dot_inactive"
+                android:layout_margin="4dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

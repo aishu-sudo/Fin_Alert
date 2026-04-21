@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1A1A1A">
+
+    <!-- Camera Viewfinder Area -->
+    <FrameLayout
+        android:id="@+id/cameraPreviewFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000">
+
+        <!-- Simulated receipt image placeholder -->
+        <ImageView
+            android:id="@+id/imgReceiptPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Receipt Preview"/>
+
+        <!-- Scan overlay frame -->
+        <FrameLayout
+            android:layout_width="260dp"
+            android:layout_height="340dp"
+            android:layout_gravity="center"
+            android:background="@drawable/scan_overlay_bg"/>
+
+        <!-- Back arrow -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back"
+            android:layout_margin="16dp"
+            android:contentDescription="Back"/>
+    </FrameLayout>
+
+    <!-- Bottom bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:background="#CC000000"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/btnGallery"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_receipt"
+            app:tint="#FFFFFF"
+            android:contentDescription="Gallery"
+            android:layout_marginEnd="32dp"/>
+
+        <LinearLayout
+            android:id="@+id/btnScan"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/circle_teal_bg"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_scan"
+                app:tint="#FFFFFF"
+                android:contentDescription="Scan"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnRetry"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_redo"
+            app:tint="#FFFFFF"
+            android:contentDescription="Retry"
+            android:layout_marginStart="32dp"/>
+    </LinearLayout>
+
+</RelativeLayout>
+

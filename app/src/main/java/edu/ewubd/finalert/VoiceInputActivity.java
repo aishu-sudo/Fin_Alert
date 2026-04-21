@@ -1,0 +1,348 @@
+package edu.ewubd.finalert;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+public class VoiceInputActivity extends AppCompatActivity {
+
+    private static final int REQUEST_RECORD_PERMISSION = 200;
+
+    private SpeechRecognizer speechRecognizer;
+
+    private TextView     tvStatus;
+    private Button       btnStartStop, btnSave, btnCancel;
+    private EditText     etResultAmount;
+    private Spinner      spinnerCategory;
+    private ImageView    ivMicIcon;
+    private LinearLayout micCircle;
+
+    private static final int STATE_IDLE   = 0;
+    private static final int STATE_LISTEN = 1;
+    private static final int STATE_RESULT = 2;
+    private int currentState = STATE_IDLE;
+
+    private final List<String> categories = Arrays.asList(
+            "Select Category",
+            "🍔 Food & Dining",
+            "🛒 Grocery",
+            "🚌 Transport",
+            "💊 Healthcare",
+            "🛍️ Shopping",
+            "🎓 Education",
+            "💡 Utilities",
+            "🎬 Entertainment",
+            "🏠 Rent / Housing",
+            "💳 Bills",
+            "🎁 Gift",
+            "✈️ Travel",
+            "📦 Other"
+    );
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_voice_input);
+
+        ImageView btnBack = findViewById(R.id.btnBack);
+        tvStatus         = findViewById(R.id.tvStatus);
+        btnStartStop     = findViewById(R.id.btnStartStop);
+        btnSave          = findViewById(R.id.btnSave);
+        btnCancel        = findViewById(R.id.btnCancel);
+        etResultAmount   = findViewById(R.id.etResultAmount);
+        spinnerCategory  = findViewById(R.id.spinnerCategory);
+        ivMicIcon        = findViewById(R.id.ivMicIcon);
+        micCircle        = findViewById(R.id.micCircle);
+
+        // Setup category spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+
+        applyState(STATE_IDLE);
+
+        btnBack.setOnClickListener(v -> finish());
+        micCircle.setOnClickListener(v -> handleStartStop());
+        btnStartStop.setOnClickListener(v -> handleStartStop());
+
+        btnSave.setOnClickListener(v -> {
+            String amount   = etResultAmount.getText().toString().trim();
+            String category = spinnerCategory.getSelectedItem().toString();
+
+            if (amount.isEmpty()) { etResultAmount.setError("Enter amount"); return; }
+            if (category.equals("Select Category")) {
+                Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            saveExpenseToFirestore(amount, category);
+        });
+
+        btnCancel.setOnClickListener(v -> finish());
+    }
+
+    private void handleStartStop() {
+        if (currentState == STATE_IDLE) {
+            checkPermissionAndStart();
+        } else if (currentState == STATE_LISTEN) {
+            stopListening();
+            applyState(STATE_RESULT);
+        } else if (currentState == STATE_RESULT) {
+            applyState(STATE_IDLE);
+            checkPermissionAndStart();
+        }
+    }
+
+    private void checkPermissionAndStart() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_PERMISSION);
+        } else {
+            startListening();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+            @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_RECORD_PERMISSION &&
+                grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startListening();
+        } else {
+            Toast.makeText(this, "Microphone permission required", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startListening() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            Toast.makeText(this, "Speech recognition not available", Toast.LENGTH_SHORT).show();
+            applyState(STATE_RESULT);
+            return;
+        }
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override public void onReadyForSpeech(Bundle p) { applyState(STATE_LISTEN); }
+            @Override public void onBeginningOfSpeech() {}
+            @Override public void onRmsChanged(float v) {}
+            @Override public void onBufferReceived(byte[] b) {}
+            @Override public void onEndOfSpeech() {}
+            @Override public void onError(int error) {
+                applyState(STATE_IDLE);
+                Toast.makeText(VoiceInputActivity.this, "Could not hear. Try again.", Toast.LENGTH_SHORT).show();
+            }
+            @Override public void onResults(Bundle results) {
+                ArrayList<String> matches =
+                        results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null && !matches.isEmpty()) {
+                    parseVoiceInput(matches.get(0));
+                } else {
+                    applyState(STATE_RESULT);
+                }
+            }
+            @Override public void onPartialResults(Bundle b) {}
+            @Override public void onEvent(int t, Bundle b) {}
+        });
+        speechRecognizer.startListening(intent);
+        applyState(STATE_LISTEN);
+    }
+
+    private void stopListening() {
+        if (speechRecognizer != null) speechRecognizer.stopListening();
+    }
+
+    private void parseVoiceInput(String text) {
+        String lower = text.toLowerCase(Locale.getDefault()).trim();
+
+        // ── Extract amount (strip non-numeric chars from each word) ──
+        String amount = "";
+        for (String w : lower.split("\\s+")) {
+            String cleaned = w.replaceAll("[^0-9.]", "");
+            if (!cleaned.isEmpty() && cleaned.matches("[0-9]+\\.?[0-9]*")) {
+                amount = cleaned;
+                break;
+            }
+        }
+
+        // ── Auto detect category ───────────────────────────────────
+        int detectedIndex = autoDetectCategory(lower);
+
+        etResultAmount.setText(amount);
+        spinnerCategory.setSelection(detectedIndex);
+        applyState(STATE_RESULT);
+
+        String detected = categories.get(detectedIndex);
+        Toast.makeText(this,
+                "Heard: \"" + text + "\"\nCategory: " + detected,
+                Toast.LENGTH_LONG).show();
+    }
+
+    // ── Keyword-based category detector ───────────────────────────
+    private int autoDetectCategory(String t) {
+        // 🍔 Food & Dining
+        if (containsAny(t, "restaurant","cafe","coffee","pizza","burger","kfc","bfc",
+                "biryani","biriyani","food","meal","dine","canteen","lunch","dinner",
+                "breakfast","iftar","nasta","snack","khana","khabar",
+                "খাবার","রেস্তোরাঁ","বিরিয়ানি","নাস্তা","চা","ভাত","রুটি")) return 1;
+
+        // 🛒 Grocery
+        if (containsAny(t, "grocery","agora","shwapno","meena","unimart","chaldal",
+                "supermarket","supershop","rice","dal","oil","fish","meat","egg","milk",
+                "vegetable","bazar","bazaar","market","কাঁচাবাজার",
+                "মাছ","মাংস","সবজি","তেল","চাল","ডাল","বাজার","দুধ","ডিম","আটা")) return 2;
+
+        // 🚌 Transport
+        if (containsAny(t, "uber","pathao","shohoz","rickshaw","ricshaw","cng","bus",
+                "taxi","auto","fuel","petrol","train","launch","ferry","ride","transport","fare",
+                "রিকশা","বাস","সিএনজি","ভাড়া","যাতায়াত","অটো","লঞ্চ")) return 3;
+
+        // 💊 Healthcare
+        if (containsAny(t, "medicine","doctor","hospital","pharmacy","drug","clinic",
+                "test","health","checkup",
+                "ওষুধ","ওষধ","ডাক্তার","হাসপাতাল","ফার্মেসি","মেডিকেল","চেকআপ")) return 4;
+
+        // 🛍️ Shopping
+        if (containsAny(t, "shopping","cloth","dress","shirt","shoe","bag","daraz",
+                "fashion","brand","store","mall",
+                "জামা","জুতা","কাপড়","পোশাক","শপিং","কেনাকাটা")) return 5;
+
+        // 🎓 Education
+        if (containsAny(t, "tuition","school","college","university","book","stationery","course","class",
+                "পড়া","বই","স্কুল","কলেজ","টিউশন","ক্লাস","বিশ্ববিদ্যালয়")) return 6;
+
+        // 💡 Utilities
+        if (containsAny(t, "electricity","gas","water","internet","wifi","recharge","mobile","sim",
+                "বিদ্যুৎ","পানি","গ্যাস","ইন্টারনেট","রিচার্জ","মোবাইল")) return 7;
+
+        // 🎬 Entertainment
+        if (containsAny(t, "movie","cinema","netflix","game","concert","ticket","fun",
+                "বিনোদন","সিনেমা","গেম")) return 8;
+
+        // 🏠 Rent
+        if (containsAny(t, "rent","house","basha","flat","room",
+                "ভাড়া","বাসা","ঘর","ফ্ল্যাট")) return 9;
+
+        // 💳 Bills
+        if (containsAny(t, "bill","payment","due","charge",
+                "বিল","পেমেন্ট")) return 10;
+
+        // 🎁 Gift
+        if (containsAny(t, "gift","present","birthday",
+                "উপহার","গিফট","জন্মদিন")) return 11;
+
+        // ✈️ Travel
+        if (containsAny(t, "tour","trip","hotel","flight","travel",
+                "ভ্রমণ","ট্যুর","হোটেল")) return 12;
+
+        return 13; // Other
+    }
+
+    // Helper
+    private boolean containsAny(String text, String... keywords) {
+        for (String kw : keywords) {
+            if (text.contains(kw)) return true;
+        }
+        return false;
+    }
+
+    private void saveExpenseToFirestore(String amount, String category) {
+        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+
+        if (uid != null) {
+            Map<String, Object> expense = new HashMap<>();
+            expense.put("amount",   amount);
+            expense.put("category", category);
+            expense.put("source",   "voice_input");
+            expense.put("date",     new java.util.Date());
+            FirebaseFirestore.getInstance()
+                    .collection("users").document(uid)
+                    .collection("expenses").add(expense);
+        }
+
+        Toast.makeText(this, "✅ Saved: " + category + " — $" + amount, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(VoiceInputActivity.this, Main_dashboard.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    private void applyState(int state) {
+        currentState = state;
+        switch (state) {
+            case STATE_IDLE:
+                tvStatus.setText("");
+                ivMicIcon.setImageResource(R.drawable.ic_mic);
+                ivMicIcon.setColorFilter(0xFFFFFFFF);
+                btnStartStop.setText("Start");
+                btnStartStop.setBackgroundResource(R.drawable.btn_green2);
+                btnStartStop.setTextColor(0xFFFFFFFF);
+                btnStartStop.setVisibility(android.view.View.VISIBLE);
+                etResultAmount.setVisibility(android.view.View.GONE);
+                spinnerCategory.setVisibility(android.view.View.GONE);
+                btnSave.setVisibility(android.view.View.GONE);
+                btnCancel.setVisibility(android.view.View.GONE);
+                break;
+            case STATE_LISTEN:
+                tvStatus.setText("Speak Now...");
+                ivMicIcon.setColorFilter(0xFF33D49C);
+                btnStartStop.setText("Stop");
+                btnStartStop.setBackgroundResource(R.drawable.btn_light2);
+                btnStartStop.setTextColor(0xFF1A1A1A);
+                btnStartStop.setVisibility(android.view.View.VISIBLE);
+                etResultAmount.setVisibility(android.view.View.GONE);
+                spinnerCategory.setVisibility(android.view.View.GONE);
+                btnSave.setVisibility(android.view.View.GONE);
+                btnCancel.setVisibility(android.view.View.GONE);
+                break;
+            case STATE_RESULT:
+                tvStatus.setText("Select Category & Save");
+                ivMicIcon.setImageResource(R.drawable.ic_redo);
+                btnStartStop.setVisibility(android.view.View.GONE);
+                etResultAmount.setVisibility(android.view.View.VISIBLE);
+                spinnerCategory.setVisibility(android.view.View.VISIBLE);
+                btnSave.setVisibility(android.view.View.VISIBLE);
+                btnCancel.setVisibility(android.view.View.VISIBLE);
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (speechRecognizer != null) speechRecognizer.destroy();
+    }
+}

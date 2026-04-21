@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/green_gradient2">
+
+    <!-- Status Bar Area -->
+
+
+    <!-- Header Section -->
+    <LinearLayout
+        android:id="@+id/headerSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical">
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/welcomeText" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="Hi, Welcome Back"
+                    android:textColor="#FFFFFF" android:textSize="22sp"
+                    android:textStyle="bold"/>
+                <TextView android:id="@+id/greetingText" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="Good Morning"
+                    android:textColor="#FFFFFF" android:textSize="12sp" android:alpha="0.8"/>
+            </LinearLayout>
+
+            <ImageView android:id="@+id/notificationIcon" android:layout_width="40dp"
+                android:layout_height="40dp" android:src="@drawable/ic_notification"
+                android:padding="8dp" android:background="@drawable/circular_bg"
+                app:tint="#FFFFFF"
+                android:contentDescription="Notifications"/>
+        </LinearLayout>
+
+        <!-- Balance and Expense Cards -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginTop="20dp">
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:background="@drawable/card_header_bg" android:padding="12dp"
+                android:layout_marginEnd="8dp">
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <ImageView android:layout_width="12dp" android:layout_height="12dp"
+                        android:src="@drawable/ic_wallet" app:tint="#FFFFFF"
+                        android:contentDescription="Wallet" android:layout_marginEnd="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Total Balance" android:textColor="#FFFFFF"
+                        android:textSize="11sp" android:alpha="0.9"/>
+                </LinearLayout>
+                <TextView android:id="@+id/totalBalanceAmount" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="$7,783.00"
+                    android:textColor="#FFFFFF" android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium" android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                 android:textColor="#FFFFFF" android:textSize="24sp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:background="@drawable/card_header_bg" android:padding="12dp"
+                android:layout_marginStart="8dp">
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <ImageView android:layout_width="12dp" android:layout_height="12dp"
+                        android:src="@drawable/ic_expense" app:tint="#FFFFFF"
+                        android:contentDescription="Expense" android:layout_marginEnd="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Total Expense" android:textColor="#FFFFFF"
+                        android:textSize="11sp" android:alpha="0.9"/>
+                </LinearLayout>
+                <TextView android:id="@+id/totalExpenseAmount" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="-$1,187.40"
+                    android:textColor="#FFFFFF" android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium" android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Progress Bar Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:orientation="horizontal"
+            android:background="@drawable/progress_bar_track_bg"
+            android:gravity="center_vertical"
+            android:layout_marginTop="12dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="10dp">
+
+            <!-- 30% badge -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:text="30%"
+                android:textColor="#33D49C"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/percentage_bg"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:gravity="center"/>
+
+            <!-- Fill bar (30% of remaining width) -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="6dp"
+                android:layout_weight="0.30"
+                android:background="#33D49C"
+                android:layout_marginStart="8dp"/>
+
+            <!-- Remaining empty space -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="6dp"
+                android:layout_weight="0.70"
+                android:background="#2A6B52"/>
+
+            <!-- Goal amount -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$20,000.00"
+                android:textColor="#FFFFFF"
+                android:textSize="11sp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Looks Good Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <View
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:background="@drawable/yellow_square"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30% Of Your Expenses, Looks Good."
+                android:textColor="#FFFFFF"
+                android:textSize="11sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:gravity="center"
+        android:elevation="8dp">
+
+        <ImageView android:id="@+id/navHome" android:layout_width="0dp"
+            android:layout_height="28dp" android:layout_weight="1"
+            android:src="@drawable/ic_home" app:tint="#33D49C"
+            android:padding="2dp" android:contentDescription="Home"/>
+        <ImageView android:id="@+id/navAnalytics" android:layout_width="0dp"
+            android:layout_height="28dp" android:layout_weight="1"
+            android:src="@drawable/ic_analytics" app:tint="#666666"
+            android:padding="2dp" android:contentDescription="Analytics"/>
+        <ImageView android:id="@+id/navTransfer" android:layout_width="0dp"
+            android:layout_height="28dp" android:layout_weight="1"
+            android:src="@drawable/ic_transfer" app:tint="#666666"
+            android:padding="2dp" android:contentDescription="Transfer"/>
+        <ImageView android:id="@+id/navLayers" android:layout_width="0dp"
+            android:layout_height="28dp" android:layout_weight="1"
+            android:src="@drawable/ic_layers" app:tint="#666666"
+            android:padding="2dp" android:contentDescription="Layers"/>
+        <ImageView android:id="@+id/navProfile" android:layout_width="0dp"
+            android:layout_height="28dp" android:layout_weight="1"
+            android:src="@drawable/ic_profile" app:tint="#666666"
+            android:padding="2dp" android:contentDescription="Profile"/>
+    </LinearLayout>
+
+    <!-- Main Content (above bottom nav) -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerSection"
+        android:layout_above="@id/bottomNav"
+        android:fillViewport="true">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="@drawable/card_bg"
+            android:paddingStart="24dp" android:paddingEnd="24dp"
+            android:paddingTop="24dp" android:paddingBottom="8dp">
+
+            <!-- Goals Section -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center"
+                android:baselineAligned="false">
+
+                <!-- Savings On Goals -->
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center"
+                    android:layout_marginEnd="8dp">
+                    <RelativeLayout
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@drawable/savings_goal_ring">
+                        <ImageView
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:src="@drawable/ic_finance2"
+                            android:layout_centerInParent="true"
+                            android:contentDescription="Car Goal"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="50%"
+                            android:textColor="#33D49C"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="6dp"/>
+                    </RelativeLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Savings On" android:textColor="#333333"
+                        android:textSize="12sp" android:layout_marginTop="8dp"
+                        android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Goals" android:textColor="#333333"
+                        android:textSize="12sp" android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Create New Goal -->
+                <LinearLayout android:id="@+id/btnCreateGoal"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical" android:gravity="center"
+                    android:layout_marginStart="8dp">
+                    <LinearLayout android:layout_width="90dp" android:layout_height="90dp"
+                        android:background="@drawable/circle_teal_bg" android:gravity="center">
+                        <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                            android:src="@drawable/ic_add" app:tint="#FFFFFF"
+                            android:contentDescription="Add Goal"/>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Create New" android:textColor="#333333"
+                        android:textSize="12sp" android:layout_marginTop="8dp"
+                        android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Goal" android:textColor="#333333"
+                        android:textSize="12sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Add Expenses Section -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/add_expense_section_bg"
+                android:padding="16dp" android:layout_marginTop="24dp">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Add Expenses" android:textColor="#111111"
+                    android:textSize="22sp" android:textStyle="bold"
+                    android:gravity="center" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="52dp"
+                    android:background="@drawable/add_expense_input_bg"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingStart="16dp" android:paddingEnd="8dp">
+
+                    <EditText android:id="@+id/etManualExpense"
+                        android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:hint="Enter Expense Manually"
+                        android:textSize="13sp" android:background="@null" android:inputType="text"/>
+
+                    <LinearLayout android:id="@+id/btnReceiptScan"
+                        android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/circle_teal_bg" android:gravity="center"
+                        android:layout_marginStart="6dp" android:layout_marginEnd="6dp">
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+                            android:src="@drawable/ic_scan"
+                            app:tint="#FFFFFF"
+                            android:contentDescription="Scan Receipt"/>
+                    </LinearLayout>
+
+                    <LinearLayout android:id="@+id/btnVoiceInput"
+                        android:layout_width="40dp" android:layout_height="40dp"
+                        android:background="@drawable/circle_teal_bg" android:gravity="center"
+                        android:layout_marginEnd="4dp">
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+                            android:src="@drawable/ic_mic"
+                            app:tint="#FFFFFF"
+                            android:contentDescription="Voice Input"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Upcoming Transactions Card -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/add_expense_section_bg"
+                android:padding="16dp" android:layout_marginTop="16dp">
+
+            <!-- Upcoming Transactions -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Upcoming Transactions" android:textColor="#111111"
+                android:textSize="20sp" android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Filter Chips -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginTop="16dp"
+                android:gravity="center">
+                <TextView android:id="@+id/chipDaily" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="Daily"
+                    android:textColor="#1A1A1A" android:textSize="12sp"
+                    android:background="@drawable/chip_outline_bg"
+                    android:paddingStart="20dp" android:paddingEnd="20dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/chipWeekly" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="Weekly"
+                    android:textColor="#1A1A1A" android:textSize="12sp"
+                    android:background="@drawable/chip_outline_bg"
+                    android:paddingStart="20dp" android:paddingEnd="20dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/chipMonthly" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="Monthly"
+                    android:textColor="#FFFFFF" android:textSize="12sp"
+                    android:background="@drawable/chip_filled_bg"
+                    android:paddingStart="20dp" android:paddingEnd="20dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp"/>
+            </LinearLayout>
+
+            <!-- Salary Transaction -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:background="@drawable/transaction_bg"
+                android:padding="16dp" android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+                <LinearLayout android:layout_width="48dp" android:layout_height="48dp"
+                    android:background="@drawable/circle_gray_bg" android:gravity="center">
+                    <ImageView android:layout_width="26dp" android:layout_height="26dp"
+                        android:src="@drawable/ic_salary" app:tint="#33D49C"
+                        android:contentDescription="Salary"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Salary" android:textColor="#111111"
+                        android:textSize="15sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="18:27 ~ April 30" android:textColor="#999999"
+                        android:textSize="11sp" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Monthly" android:textColor="#888888" android:textSize="11sp"
+                    android:background="@drawable/label_bg"
+                    android:paddingStart="12dp" android:paddingEnd="12dp"
+                    android:paddingTop="6dp" android:paddingBottom="6dp"
+                    android:layout_marginEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="$4,000.00" android:textColor="#33D49C"
+                    android:textSize="15sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!-- Groceries Transaction -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:background="@drawable/transaction_bg"
+                android:padding="16dp" android:layout_marginTop="12dp"
+                android:gravity="center_vertical">
+                <LinearLayout android:layout_width="48dp" android:layout_height="48dp"
+                    android:background="@drawable/circle_gray_bg" android:gravity="center">
+                    <ImageView android:layout_width="26dp" android:layout_height="26dp"
+                        android:src="@drawable/ic_groceries" app:tint="#33D49C"
+                        android:contentDescription="Groceries"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Groceries" android:textColor="#111111"
+                        android:textSize="15sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="17:00 ~ April 24" android:textColor="#999999"
+                        android:textSize="11sp" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Pantry" android:textColor="#888888" android:textSize="11sp"
+                    android:background="@drawable/label_bg"
+                    android:paddingStart="12dp" android:paddingEnd="12dp"
+                    android:paddingTop="6dp" android:paddingBottom="6dp"
+                    android:layout_marginEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="-$100.00" android:textColor="#F44336"
+                    android:textSize="15sp" android:textStyle="bold"/>
+            </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>
