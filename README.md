@@ -34,9 +34,11 @@
   | Custom Views | CircularProgressView (canvas-drawn budget ring) |
   | Build System | Gradle (Kotlin DSL) |
 
-
+  ---
 
   ## Project Structure
+
+  ```
   app/src/main/java/edu/ewubd/finalert/
   ├── MainActivity.java            # Splash screen
   ├── Auth.java                    # Login / Sign Up choice
@@ -66,9 +68,12 @@
       expenses/
         {docId}/
           title, amount, category, category_key,
-          date, timestamp, message, source is one of: `manual`, `receipt_scan`, `voice_input`
+          date, timestamp, message, source
+  ```
 
+  `source` is one of: `manual`, `receipt_scan`, `voice_input`
 
+  ---
 
   ## Categories & Budgets
 
@@ -87,7 +92,7 @@
 
   **Total Budget: ৳20,000/month**
 
-
+  ---
 
   ## Setup & Installation
 
@@ -96,10 +101,12 @@
   - JDK 11+
   - A Firebase project with Authentication and Firestore enabled
 
-  
+  ### Steps
 
-
-     
+  1. Clone the repository:
+     ```bash
+     git clone https://github.com/aishu-sudo/Fin_Alert.git
+     ```
 
   2. Open the project in Android Studio.
 
@@ -125,7 +132,7 @@
   | `RECORD_AUDIO` | Voice-based expense entry |
   | `INTERNET` | Firebase data sync and authentication |
 
-
+  ---
 
   ## Budget Alert Thresholds
 
@@ -138,4 +145,5 @@
   ---
 
   ## License
+
   This project is developed for academic purposes at East West University, Bangladesh.
