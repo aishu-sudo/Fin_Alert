@@ -17,10 +17,23 @@
         android:layout_marginBottom="24dp"/>
 
     <EditText
+        android:id="@+id/etTitle"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="Expense Title (e.g. Lunch, Bus fare)"
+        android:textSize="14sp"
+        android:textColor="#1A1A1A"
+        android:background="@drawable/add_expense_input_bg"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:inputType="text"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
         android:id="@+id/etAmount"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:hint="Enter Amount"
+        android:hint="Amount"
         android:textSize="14sp"
         android:textColor="#1A1A1A"
         android:background="@drawable/add_expense_input_bg"
@@ -33,7 +46,7 @@
         android:id="@+id/etCategory"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:hint="Enter Item / Field Of Expense"
+        android:hint="Category (food / transport / shopping...)"
         android:textSize="14sp"
         android:textColor="#1A1A1A"
         android:background="@drawable/add_expense_input_bg"

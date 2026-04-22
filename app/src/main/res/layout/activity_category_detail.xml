@@ -17,8 +17,8 @@
         android:paddingRight="20dp"
         android:paddingBottom="20dp">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal" android:gravity="center_vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
 
             <ImageView
                 android:id="@+id/btnBack"
@@ -31,10 +31,11 @@
                 android:contentDescription="Back"/>
 
             <TextView
+                android:id="@+id/tvCategoryTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Categories"
+                android:text="Food"
                 android:textColor="#FFFFFF"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -248,16 +249,60 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:background="@android:color/transparent"
             android:paddingStart="24dp" android:paddingEnd="24dp"
-            android:paddingTop="24dp" android:paddingBottom="8dp">
+            android:paddingTop="12dp" android:paddingBottom="16dp">
 
-            <!-- Category grid (RecyclerView driven by CategoriesActivity) -->
+            <!-- Month header (left month title, right calendar icon) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvMonth"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="April"
+                    android:textSize="16sp"
+                    android:textColor="#111111"
+                    android:fontFamily="sans-serif-medium"/>
+
+                <ImageView
+                    android:id="@+id/ivCalendar"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/material_ic_calendar_black_24dp"
+                    android:background="@drawable/circle_gray_bg"
+                    android:padding="6dp"
+                    android:contentDescription="Calendar"/>
+            </LinearLayout>
+
+            <!-- Expenses list -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategories"
+                android:id="@+id/rvExpenses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:overScrollMode="never"/>
+                android:nestedScrollingEnabled="false"/>
+
+            <!-- Add expense centered button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="12dp">
+
+                <Button
+                    android:id="@+id/btnAddExpense"
+                    android:layout_width="160dp"
+                    android:layout_height="44dp"
+                    android:text="Add Expenses"
+                    android:background="@drawable/btn_green"
+                    android:textColor="#FFFFFF"/>
+            </LinearLayout>
 
         </LinearLayout>
 

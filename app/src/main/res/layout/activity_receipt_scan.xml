@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         android:background="#000000">
 
-        <!-- Simulated receipt image placeholder -->
         <ImageView
             android:id="@+id/imgReceiptPreview"
             android:layout_width="match_parent"
@@ -21,14 +20,12 @@
             android:scaleType="centerCrop"
             android:contentDescription="Receipt Preview"/>
 
-        <!-- Scan overlay frame -->
         <FrameLayout
             android:layout_width="260dp"
             android:layout_height="340dp"
             android:layout_gravity="center"
             android:background="@drawable/scan_overlay_bg"/>
 
-        <!-- Back arrow -->
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
@@ -38,8 +35,9 @@
             android:contentDescription="Back"/>
     </FrameLayout>
 
-    <!-- Bottom bar -->
+    <!-- Scan mode bottom bar -->
     <LinearLayout
+        android:id="@+id/scanBar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"
@@ -81,5 +79,90 @@
             android:layout_marginStart="32dp"/>
     </LinearLayout>
 
-</RelativeLayout>
+    <!-- Result panel (shown after scan) -->
+    <LinearLayout
+        android:id="@+id/resultPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:visibility="gone">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Receipt Detected"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amount"
+            android:textColor="#666666"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp"/>
+
+        <EditText
+            android:id="@+id/etResultAmount"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/add_expense_input_bg"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:inputType="numberDecimal"
+            android:textSize="15sp"
+            android:textColor="#1A1A1A"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textColor="#666666"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/add_expense_input_bg"
+            android:paddingStart="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnScanAgain"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:text="Scan Again"
+                android:textColor="#1A1A1A"
+                android:backgroundTint="#DFF7E2"
+                android:stateListAnimator="@null"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:text="Save"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#33D49C"
+                android:stateListAnimator="@null"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

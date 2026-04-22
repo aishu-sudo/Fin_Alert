@@ -313,12 +313,32 @@
                 android:orientation="vertical" android:background="@drawable/add_expense_section_bg"
                 android:padding="16dp" android:layout_marginTop="16dp">
 
-            <!-- Upcoming Transactions -->
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="Upcoming Transactions" android:textColor="#111111"
-                android:textSize="20sp" android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="4dp"/>
+            <!-- Transactions header row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Recent Transactions"
+                    android:textColor="#111111"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvTransactionCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 total"
+                    android:textColor="#33D49C"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
 
             <!-- Filter Chips -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -346,69 +366,13 @@
                     android:paddingTop="8dp" android:paddingBottom="8dp"/>
             </LinearLayout>
 
-            <!-- Salary Transaction -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:background="@drawable/transaction_bg"
-                android:padding="16dp" android:layout_marginTop="16dp"
-                android:gravity="center_vertical">
-                <LinearLayout android:layout_width="48dp" android:layout_height="48dp"
-                    android:background="@drawable/circle_gray_bg" android:gravity="center">
-                    <ImageView android:layout_width="26dp" android:layout_height="26dp"
-                        android:src="@drawable/ic_salary" app:tint="#33D49C"
-                        android:contentDescription="Salary"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:layout_marginStart="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Salary" android:textColor="#111111"
-                        android:textSize="15sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="18:27 ~ April 30" android:textColor="#999999"
-                        android:textSize="11sp" android:layout_marginTop="2dp"/>
-                </LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Monthly" android:textColor="#888888" android:textSize="11sp"
-                    android:background="@drawable/label_bg"
-                    android:paddingStart="12dp" android:paddingEnd="12dp"
-                    android:paddingTop="6dp" android:paddingBottom="6dp"
-                    android:layout_marginEnd="12dp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="$4,000.00" android:textColor="#33D49C"
-                    android:textSize="15sp" android:textStyle="bold"/>
-            </LinearLayout>
-
-            <!-- Groceries Transaction -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:background="@drawable/transaction_bg"
-                android:padding="16dp" android:layout_marginTop="12dp"
-                android:gravity="center_vertical">
-                <LinearLayout android:layout_width="48dp" android:layout_height="48dp"
-                    android:background="@drawable/circle_gray_bg" android:gravity="center">
-                    <ImageView android:layout_width="26dp" android:layout_height="26dp"
-                        android:src="@drawable/ic_groceries" app:tint="#33D49C"
-                        android:contentDescription="Groceries"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:orientation="vertical"
-                    android:layout_marginStart="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Groceries" android:textColor="#111111"
-                        android:textSize="15sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="17:00 ~ April 24" android:textColor="#999999"
-                        android:textSize="11sp" android:layout_marginTop="2dp"/>
-                </LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Pantry" android:textColor="#888888" android:textSize="11sp"
-                    android:background="@drawable/label_bg"
-                    android:paddingStart="12dp" android:paddingEnd="12dp"
-                    android:paddingTop="6dp" android:paddingBottom="6dp"
-                    android:layout_marginEnd="12dp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="-$100.00" android:textColor="#F44336"
-                    android:textSize="15sp" android:textStyle="bold"/>
-            </LinearLayout>
+            <!-- Recent transactions populated from Firestore -->
+            <LinearLayout
+                android:id="@+id/transactionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"/>
 
             </LinearLayout>
 

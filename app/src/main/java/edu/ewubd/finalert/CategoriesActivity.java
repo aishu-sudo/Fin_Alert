@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.animation.ValueAnimator;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.Map;
 public class CategoriesActivity extends AppCompatActivity {
 
     private static final double TOTAL_BUDGET = 20000.0;
+    private ListenerRegistration listener;
 
     // Category model
     static class CategoryItem {
@@ -59,7 +62,7 @@ public class CategoriesActivity extends AppCompatActivity {
         progressFill  = findViewById(R.id.progressFill);
         progressEmpty = findViewById(R.id.progressEmpty);
 
-        tvBudget.setText(String.format("$%,.0f", TOTAL_BUDGET));
+        tvBudget.setText(String.format("৳%,.0f", TOTAL_BUDGET));
 
         // Back button
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
@@ -76,85 +79,100 @@ public class CategoriesActivity extends AppCompatActivity {
         adapter = new CategoryAdapter(items, this::onAddClicked);
         rv.setAdapter(adapter);
 
-        // Load from Firestore
-        loadExpenses();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startListening();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (listener != null) { listener.remove(); listener = null; }
     }
 
     private void buildCategories() {
         items.clear();
-        items.add(new CategoryItem("food",      "Food",      R.drawable.ic_groceries, 3000));
-        items.add(new CategoryItem("transport", "Transport", R.drawable.ic_transfer,  2000));
-        items.add(new CategoryItem("grocery",   "Grocery",   R.drawable.ic_wallet,    4000));
-        items.add(new CategoryItem("shopping",  "Shopping",  R.drawable.ic_expense,   2000));
-        items.add(new CategoryItem("savings",   "Savings",   R.drawable.ic_goal,      5000));
-        items.add(new CategoryItem("rent",      "Rent",      R.drawable.ic_home,      8000));
-        items.add(new CategoryItem("gift",      "Gift",      R.drawable.ic_salary,    1000));
-        items.add(new CategoryItem("health",    "Health",    R.drawable.ic_battery,   2000));
+        // use appropriate icons from drawable resources for each category type
+        items.add(new CategoryItem("food",       "Food",        R.drawable.ic_groceries, 3000));
+        items.add(new CategoryItem("transport",  "Transport",   R.drawable.ic_transfer,  2000));
+        items.add(new CategoryItem("grocery",    "Grocery",     R.drawable.ic_receipt,   4000));
+        items.add(new CategoryItem("shopping",   "Shopping",    R.drawable.ic_expense,   2000));
+        items.add(new CategoryItem("savings",    "Savings",     R.drawable.ic_goal,      5000));
+        items.add(new CategoryItem("rent",       "Rent",        R.drawable.ic_home,      8000));
+        items.add(new CategoryItem("gift",       "Gift",        R.drawable.ic_salary,    1000));
+        items.add(new CategoryItem("health",     "Health",      R.drawable.ic_battery,   2000));
+        items.add(new CategoryItem("education",  "Educational", R.drawable.ic_scan,      3000));
+        items.add(new CategoryItem("other",      "Others",      R.drawable.ic_wallet,    2000));
     }
 
-    private void loadExpenses() {
+    private void startListening() {
         String uid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
         if (uid == null) return;
+        if (listener != null) listener.remove();
 
-        FirebaseFirestore.getInstance()
+        listener = FirebaseFirestore.getInstance()
                 .collection("users").document(uid)
                 .collection("expenses")
-                .get()
-                .addOnSuccessListener(snapshots -> {
-                    // Reset spent
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null || snapshots == null) return;
+
                     for (CategoryItem c : items) c.spent = 0;
                     double totalSpent = 0;
-
-                    // Map category name → spent
                     Map<String, Double> spentMap = new HashMap<>();
 
                     for (QueryDocumentSnapshot doc : snapshots) {
+                        String catKey = doc.getString("category_key");
                         String rawCat = doc.getString("category");
                         String rawAmt = doc.getString("amount");
-                        if (rawAmt == null || rawCat == null) continue;
+                        if (rawAmt == null) continue;
                         try {
-                            double amt = Double.parseDouble(rawAmt);
+                            double amt = Double.parseDouble(rawAmt.replace(",", ""));
                             totalSpent += amt;
-                            // Match to our category items
-                            String lower = rawCat.toLowerCase();
-                            String mapped = mapCategory(lower);
-                            spentMap.merge(mapped, amt, Double::sum);
+                            String key;
+                            if (catKey != null && !catKey.isEmpty()) {
+                                key = catKey;
+                            } else if (rawCat != null) {
+                                key = mapCategory(rawCat.toLowerCase());
+                            } else {
+                                key = "other";
+                            }
+                            spentMap.merge(key, amt, Double::sum);
                         } catch (NumberFormatException ignored) {}
                     }
 
-                    // Update spent in items
                     for (CategoryItem c : items) {
-                        if (spentMap.containsKey(c.name)) {
-                            c.spent = spentMap.get(c.name);
-                        }
+                        Double v = spentMap.get(c.name);
+                        c.spent = v != null ? v : 0;
                     }
 
-                    // Update UI
                     double balance = TOTAL_BUDGET - totalSpent;
-                    int pct = (int)Math.min(100, totalSpent / TOTAL_BUDGET * 100);
+                    int pct = (int) Math.min(100, totalSpent / TOTAL_BUDGET * 100);
 
-                    tvBalance.setText(String.format("$%,.2f", balance));
-                    tvExpense.setText(String.format("-$%,.2f", totalSpent));
+                    tvBalance.setText(String.format("৳%,.2f", balance));
+                    tvExpense.setText(String.format("-৳%,.2f", totalSpent));
                     tvPercent.setText(pct + "%");
 
-                    float fill = pct / 100f;
-                    LinearLayout.LayoutParams fillParams =
-                            (LinearLayout.LayoutParams) progressFill.getLayoutParams();
-                    fillParams.weight = fill;
-                    progressFill.setLayoutParams(fillParams);
-                    LinearLayout.LayoutParams emptyParams =
-                            (LinearLayout.LayoutParams) progressEmpty.getLayoutParams();
-                    emptyParams.weight = 1f - fill;
-                    progressEmpty.setLayoutParams(emptyParams);
+                    LinearLayout.LayoutParams currentFillParams = (LinearLayout.LayoutParams) progressFill.getLayoutParams();
+                    ValueAnimator anim = ValueAnimator.ofFloat(currentFillParams.weight, pct / 100f);
+                    anim.setDuration(400);
+                    anim.addUpdateListener(animation -> {
+                        float val = (float) animation.getAnimatedValue();
+                        LinearLayout.LayoutParams fp = (LinearLayout.LayoutParams) progressFill.getLayoutParams();
+                        fp.weight = val;
+                        progressFill.setLayoutParams(fp);
+                        LinearLayout.LayoutParams ep = (LinearLayout.LayoutParams) progressEmpty.getLayoutParams();
+                        ep.weight = 1f - val;
+                        progressEmpty.setLayoutParams(ep);
+                    });
+                    anim.start();
 
-                    if (pct <= 50) {
-                        tvStatus.setText(pct + "% Of Your Expenses, Looks Good.");
-                    } else if (pct <= 80) {
-                        tvStatus.setText(pct + "% Of Your Expenses, Be Careful.");
-                    } else {
-                        tvStatus.setText(pct + "% Of Your Expenses, Overspending!");
-                    }
+                    if (pct <= 50) tvStatus.setText(pct + "% Of Your Expenses, Looks Good.");
+                    else if (pct <= 80) tvStatus.setText(pct + "% Of Your Expenses, Be Careful.");
+                    else tvStatus.setText(pct + "% Of Your Expenses, Overspending!");
 
                     adapter.notifyDataSetChanged();
                 });
@@ -165,10 +183,11 @@ public class CategoriesActivity extends AppCompatActivity {
         if (lower.contains("transport") || lower.contains("bus") || lower.contains("rickshaw")) return "transport";
         if (lower.contains("grocery") || lower.contains("bazar")) return "grocery";
         if (lower.contains("shopping") || lower.contains("cloth")) return "shopping";
-        if (lower.contains("saving") || lower.contains("saving")) return "savings";
+        if (lower.contains("saving") || lower.contains("savings")) return "savings";
         if (lower.contains("rent") || lower.contains("house") || lower.contains("home")) return "rent";
         if (lower.contains("gift") || lower.contains("present")) return "gift";
         if (lower.contains("health") || lower.contains("medicine") || lower.contains("doctor")) return "health";
+        if (lower.contains("education") || lower.contains("school") || lower.contains("tuition") || lower.contains("book")) return "education";
         return "other";
     }
 
@@ -194,14 +213,11 @@ public class CategoriesActivity extends AppCompatActivity {
         navLayers.setColorFilter(teal); // active
         navProfile.setColorFilter(grey);
 
-        navHome.setOnClickListener(v -> {
-            startActivity(new Intent(this, Main_dashboard.class));
-            finish();
-        });
-        navAnalytics.setOnClickListener(v -> {});
-        navTransfer.setOnClickListener(v -> {});
+        navHome.setOnClickListener(v -> { startActivity(new Intent(this, Main_dashboard.class)); finish(); });
+        navAnalytics.setOnClickListener(v -> { startActivity(new Intent(this, AnalyticsActivity.class)); finish(); });
+        navTransfer.setOnClickListener(v -> { startActivity(new Intent(this, AddExpenseActivity.class)); });
         navLayers.setOnClickListener(v -> {});
-        navProfile.setOnClickListener(v -> {});
+        navProfile.setOnClickListener(v -> { startActivity(new Intent(this, ProfileActivity.class)); finish(); });
     }
 
     // ── Adapter ───────────────────────────────────────────────────
@@ -243,7 +259,16 @@ public class CategoriesActivity extends AppCompatActivity {
                 // Icon tint: white on dark circle
                 vh.ivIcon.setColorFilter(Color.WHITE);
 
-                vh.tvPercent.setText(item.percentLeft() + "% Left");
+                // show label + percent for clarity (helps preview/runtime debugging)
+                vh.tvPercent.setText(item.label + "\n" + item.percentLeft() + "% Left");
+                // open detail on click
+                vh.itemView.setOnClickListener(v -> {
+                    Intent i = new Intent(v.getContext(), CategoryDetailActivity.class);
+                    i.putExtra("name", item.name);
+                    i.putExtra("label", item.label);
+                    i.putExtra("budget", item.budget);
+                    v.getContext().startActivity(i);
+                });
                 // Dark text for 0% left
                 vh.tvPercent.setTextColor(item.percentLeft() == 0
                         ? Color.parseColor("#EF4444")

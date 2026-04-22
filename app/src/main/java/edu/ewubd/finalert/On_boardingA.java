@@ -45,7 +45,7 @@ public class On_boardingA extends AppCompatActivity {
         Intent intent = new Intent(On_boardingA.this, On_boardingB.class);
         intent.putExtra("destination", destination);
         startActivity(intent);
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         finish();
     }
 }

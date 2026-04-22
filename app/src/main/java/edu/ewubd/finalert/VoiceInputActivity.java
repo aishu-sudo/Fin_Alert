@@ -25,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -43,69 +42,167 @@ public class VoiceInputActivity extends AppCompatActivity {
     private Spinner      spinnerCategory;
     private ImageView    ivMicIcon;
     private LinearLayout micCircle;
+    private List<String> categories;
+    private int currentState = STATE_IDLE;
 
     private static final int STATE_IDLE   = 0;
     private static final int STATE_LISTEN = 1;
     private static final int STATE_RESULT = 2;
-    private int currentState = STATE_IDLE;
 
-    private final List<String> categories = Arrays.asList(
-            "Select Category",
-            "🍔 Food & Dining",
-            "🛒 Grocery",
-            "🚌 Transport",
-            "💊 Healthcare",
-            "🛍️ Shopping",
-            "🎓 Education",
-            "💡 Utilities",
-            "🎬 Entertainment",
-            "🏠 Rent / Housing",
-            "💳 Bills",
-            "🎁 Gift",
-            "✈️ Travel",
-            "📦 Other"
-    );
+    // Simple containsAny — same pattern as ReceiptScanActivity
+    private int autoDetectCategory(String text) {
+        String t = text.toLowerCase(Locale.getDefault());
+
+        // Food & Dining — index 1
+        if (containsAny(t,
+                "food", "restaurant", "cafe", "coffee", "pizza", "burger", "kfc", "bfc",
+                "biryani", "biriyani", "meal", "lunch", "dinner", "breakfast", "iftar",
+                "nasta", "snack", "khabar", "khawa", "khaoa", "roti", "bhat", "rice",
+                "curry", "chicken", "mutton", "fry", "khabo", "khai", "kheye",
+                "খাবার", "রেস্তোরাঁ",
+                "ভাত", "রুটি"))
+            return 1;
+
+        // Grocery — index 2
+        if (containsAny(t,
+                "grocery", "agora", "shwapno", "meena", "unimart", "chaldal",
+                "supermarket", "supershop", "bazar", "bazaar", "kacha bazar",
+                "shobji", "sabzi", "vegetable", "maach", "fish market",
+                "chaal", "dal", "oil", "tel", "chal kena",
+                "বাজার", "চাল",
+                "মাছ", "সবজি", "তেল"))
+            return 2;
+
+        // Transport — index 3
+        if (containsAny(t,
+                "transport", "uber", "pathao", "shohoz", "rickshaw", "ricksha", "riksha",
+                "cng", "bus", "taxi", "auto", "fuel", "petrol", "train", "launch",
+                "ferry", "ride", "gari", "auto rickshaw",
+                "রিকশা", "বাস",
+                "ভাড়া", "গাড়ি"))
+            return 3;
+
+        // Health — index 4
+        if (containsAny(t,
+                "medicine", "doctor", "hospital", "pharmacy", "clinic",
+                "health", "drug", "test", "checkup", "osud", "oshud", "dawai",
+                "ওষুধ", "ডাক্তার",
+                "ফার্মেসি"))
+            return 4;
+
+        // Shopping — index 5
+        if (containsAny(t,
+                "shopping", "shop", "cloth", "clothes", "dress", "shirt", "pant",
+                "shoe", "bag", "wallet", "daraz", "fashion", "brand", "store",
+                "mall", "showroom", "kapor", "jamai", "jama", "juta", "kena",
+                "জামা", "জুতা",
+                "কাপড়", "শপিং",
+                "কেনাকাটা"))
+            return 5;
+
+        // Education — index 6
+        if (containsAny(t,
+                "tuition", "school", "college", "university", "book", "boi",
+                "stationery", "course", "class", "exam", "fees",
+                "বই", "স্কুল",
+                "টিউশন"))
+            return 6;
+
+        // Utilities — index 7
+        if (containsAny(t,
+                "electricity", "gas", "water", "internet", "wifi",
+                "recharge", "mobile", "sim", "bijli", "pani",
+                "বিদ্যুৎ",
+                "পানি", "রিচার্জ"))
+            return 7;
+
+        // Entertainment — index 8
+        if (containsAny(t,
+                "movie", "cinema", "netflix", "game", "concert",
+                "ticket", "fun", "entertainment",
+                "সিনেমা"))
+            return 8;
+
+        // Rent — index 9
+        if (containsAny(t,
+                "rent", "house rent", "basha", "flat", "room", "bari", "basa",
+                "ভাড়া", "বাসা",
+                "বাড়ি"))
+            return 9;
+
+        // Bills — index 10
+        if (containsAny(t,
+                "bill", "utility bill", "due", "charge",
+                "বিল"))
+            return 10;
+
+        // Gift — index 11
+        if (containsAny(t,
+                "gift", "present", "birthday", "uphar",
+                "উপহার", "জন্মদিন"))
+            return 11;
+
+        // Travel — index 12
+        if (containsAny(t,
+                "tour", "trip", "hotel", "flight", "travel", "cox", "sundarban",
+                "ভ্রমণ", "ট্যার"))
+            return 12;
+
+        return 13; // Other
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_input);
 
-        ImageView btnBack = findViewById(R.id.btnBack);
-        tvStatus         = findViewById(R.id.tvStatus);
-        btnStartStop     = findViewById(R.id.btnStartStop);
-        btnSave          = findViewById(R.id.btnSave);
-        btnCancel        = findViewById(R.id.btnCancel);
-        etResultAmount   = findViewById(R.id.etResultAmount);
-        spinnerCategory  = findViewById(R.id.spinnerCategory);
-        ivMicIcon        = findViewById(R.id.ivMicIcon);
-        micCircle        = findViewById(R.id.micCircle);
+        tvStatus = findViewById(R.id.tvStatus);
+        btnStartStop = findViewById(R.id.btnStartStop);
+        btnSave = findViewById(R.id.btnSave);
+        btnCancel = findViewById(R.id.btnCancel);
+        etResultAmount = findViewById(R.id.etResultAmount);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
+        ivMicIcon = findViewById(R.id.ivMicIcon);
+        micCircle = findViewById(R.id.micCircle);
 
-        // Setup category spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, categories);
+        categories = new ArrayList<>();
+        categories.add("");               // index 0 unused
+        categories.add("Food & Dining");  // 1
+        categories.add("Grocery");        // 2
+        categories.add("Transport");      // 3
+        categories.add("Health");         // 4
+        categories.add("Shopping");       // 5
+        categories.add("Education");      // 6
+        categories.add("Utilities");      // 7
+        categories.add("Entertainment");  // 8
+        categories.add("Rent");           // 9
+        categories.add("Bills");          // 10
+        categories.add("Gift");           // 11
+        categories.add("Travel");         // 12
+        categories.add("Other");          // 13
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         applyState(STATE_IDLE);
 
-        btnBack.setOnClickListener(v -> finish());
-        micCircle.setOnClickListener(v -> handleStartStop());
         btnStartStop.setOnClickListener(v -> handleStartStop());
+        micCircle.setOnClickListener(v -> handleStartStop());
 
         btnSave.setOnClickListener(v -> {
-            String amount   = etResultAmount.getText().toString().trim();
-            String category = spinnerCategory.getSelectedItem().toString();
-
-            if (amount.isEmpty()) { etResultAmount.setError("Enter amount"); return; }
-            if (category.equals("Select Category")) {
-                Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
+            String amt = etResultAmount.getText().toString().trim();
+            String cat = categories.get(spinnerCategory.getSelectedItemPosition());
+            if (amt.isEmpty()) {
+                Toast.makeText(this, "Enter an amount", Toast.LENGTH_SHORT).show();
                 return;
             }
-            saveExpenseToFirestore(amount, category);
+            saveExpenseToFirestore(amt, cat);
         });
 
-        btnCancel.setOnClickListener(v -> finish());
+        btnCancel.setOnClickListener(v -> applyState(STATE_IDLE));
     }
 
     private void handleStartStop() {
@@ -187,7 +284,7 @@ public class VoiceInputActivity extends AppCompatActivity {
     private void parseVoiceInput(String text) {
         String lower = text.toLowerCase(Locale.getDefault()).trim();
 
-        // ── Extract amount (strip non-numeric chars from each word) ──
+        // Extract amount
         String amount = "";
         for (String w : lower.split("\\s+")) {
             String cleaned = w.replaceAll("[^0-9.]", "");
@@ -197,7 +294,6 @@ public class VoiceInputActivity extends AppCompatActivity {
             }
         }
 
-        // ── Auto detect category ───────────────────────────────────
         int detectedIndex = autoDetectCategory(lower);
 
         etResultAmount.setText(amount);
@@ -210,67 +306,6 @@ public class VoiceInputActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
-    // ── Keyword-based category detector ───────────────────────────
-    private int autoDetectCategory(String t) {
-        // 🍔 Food & Dining
-        if (containsAny(t, "restaurant","cafe","coffee","pizza","burger","kfc","bfc",
-                "biryani","biriyani","food","meal","dine","canteen","lunch","dinner",
-                "breakfast","iftar","nasta","snack","khana","khabar",
-                "খাবার","রেস্তোরাঁ","বিরিয়ানি","নাস্তা","চা","ভাত","রুটি")) return 1;
-
-        // 🛒 Grocery
-        if (containsAny(t, "grocery","agora","shwapno","meena","unimart","chaldal",
-                "supermarket","supershop","rice","dal","oil","fish","meat","egg","milk",
-                "vegetable","bazar","bazaar","market","কাঁচাবাজার",
-                "মাছ","মাংস","সবজি","তেল","চাল","ডাল","বাজার","দুধ","ডিম","আটা")) return 2;
-
-        // 🚌 Transport
-        if (containsAny(t, "uber","pathao","shohoz","rickshaw","ricshaw","cng","bus",
-                "taxi","auto","fuel","petrol","train","launch","ferry","ride","transport","fare",
-                "রিকশা","বাস","সিএনজি","ভাড়া","যাতায়াত","অটো","লঞ্চ")) return 3;
-
-        // 💊 Healthcare
-        if (containsAny(t, "medicine","doctor","hospital","pharmacy","drug","clinic",
-                "test","health","checkup",
-                "ওষুধ","ওষধ","ডাক্তার","হাসপাতাল","ফার্মেসি","মেডিকেল","চেকআপ")) return 4;
-
-        // 🛍️ Shopping
-        if (containsAny(t, "shopping","cloth","dress","shirt","shoe","bag","daraz",
-                "fashion","brand","store","mall",
-                "জামা","জুতা","কাপড়","পোশাক","শপিং","কেনাকাটা")) return 5;
-
-        // 🎓 Education
-        if (containsAny(t, "tuition","school","college","university","book","stationery","course","class",
-                "পড়া","বই","স্কুল","কলেজ","টিউশন","ক্লাস","বিশ্ববিদ্যালয়")) return 6;
-
-        // 💡 Utilities
-        if (containsAny(t, "electricity","gas","water","internet","wifi","recharge","mobile","sim",
-                "বিদ্যুৎ","পানি","গ্যাস","ইন্টারনেট","রিচার্জ","মোবাইল")) return 7;
-
-        // 🎬 Entertainment
-        if (containsAny(t, "movie","cinema","netflix","game","concert","ticket","fun",
-                "বিনোদন","সিনেমা","গেম")) return 8;
-
-        // 🏠 Rent
-        if (containsAny(t, "rent","house","basha","flat","room",
-                "ভাড়া","বাসা","ঘর","ফ্ল্যাট")) return 9;
-
-        // 💳 Bills
-        if (containsAny(t, "bill","payment","due","charge",
-                "বিল","পেমেন্ট")) return 10;
-
-        // 🎁 Gift
-        if (containsAny(t, "gift","present","birthday",
-                "উপহার","গিফট","জন্মদিন")) return 11;
-
-        // ✈️ Travel
-        if (containsAny(t, "tour","trip","hotel","flight","travel",
-                "ভ্রমণ","ট্যুর","হোটেল")) return 12;
-
-        return 13; // Other
-    }
-
-    // Helper
     private boolean containsAny(String text, String... keywords) {
         for (String kw : keywords) {
             if (text.contains(kw)) return true;
@@ -281,23 +316,51 @@ public class VoiceInputActivity extends AppCompatActivity {
     private void saveExpenseToFirestore(String amount, String category) {
         String uid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
-
-        if (uid != null) {
-            Map<String, Object> expense = new HashMap<>();
-            expense.put("amount",   amount);
-            expense.put("category", category);
-            expense.put("source",   "voice_input");
-            expense.put("date",     new java.util.Date());
-            FirebaseFirestore.getInstance()
-                    .collection("users").document(uid)
-                    .collection("expenses").add(expense);
+        if (uid == null) {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        Toast.makeText(this, "✅ Saved: " + category + " — $" + amount, Toast.LENGTH_SHORT).show();
+        String today = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                .format(new java.util.Date());
+
+        Map<String, Object> expense = new HashMap<>();
+        expense.put("title",        category);
+        expense.put("amount",       amount);
+        expense.put("category",     category);
+        expense.put("category_key", mapLabelToKey(category));
+        expense.put("source",       "voice_input");
+        expense.put("date",         today);
+        expense.put("timestamp",    com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+        FirebaseFirestore.getInstance()
+                .collection("users").document(uid)
+                .collection("expenses")
+                .add(expense);
+
+        Toast.makeText(this, "Saved: " + category + " — " + amount + " tk", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(VoiceInputActivity.this, Main_dashboard.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private String mapLabelToKey(String label) {
+        if (label == null) return "other";
+        String s = label.toLowerCase(Locale.getDefault());
+        if (s.contains("food") || s.contains("dining")) return "food";
+        if (s.contains("grocery"))                       return "grocery";
+        if (s.contains("transport"))                     return "transport";
+        if (s.contains("health"))                        return "health";
+        if (s.contains("shopping"))                      return "shopping";
+        if (s.contains("education"))                     return "education";
+        if (s.contains("utilities"))                     return "utilities";
+        if (s.contains("entertainment"))                 return "entertainment";
+        if (s.contains("rent"))                          return "rent";
+        if (s.contains("bills") || s.contains("bill"))  return "utilities";
+        if (s.contains("gift"))                          return "gift";
+        if (s.contains("travel"))                        return "travel";
+        return "other";
     }
 
     private void applyState(int state) {
