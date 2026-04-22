@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5FFF5"
+    android:gravity="top|center_horizontal"
+    android:paddingTop="80dp">
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/ic_finance2" />
+
+    <!-- App Name -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FinWise"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textColor="#0D1B2A"
+        android:backgroundTint="@null"
+        android:layout_marginTop="16dp" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="#6B7280"
+        android:gravity="center"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Login Button -->
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Log In"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#33D49C"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:stateListAnimator="@null"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp" />
+
+    <Button
+        android:id="@+id/btnSignup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Sign Up"
+        android:textColor="#0D1B2A"
+        android:backgroundTint="#DFF7E2"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:stateListAnimator="@null"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp" />
+
+</LinearLayout>

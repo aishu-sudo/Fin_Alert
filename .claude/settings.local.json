@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(C:/Users/Pc/Downloads/oracleJdk-25/bin/java.exe *)",
+      "Bash(./gradlew clean *)"
+    ]
+  }
+}
